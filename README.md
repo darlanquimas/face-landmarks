@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-Este projeto é uma aplicação ReactJS desenvolvida para estudos e insights em reconhecimento facial e de mãos usando TensorFlow. A aplicação utiliza o TensorFlow.js juntamente com modelos específicos para facemesh e handpose. Ao acessar sua webcam, ela mapeia pontos-chave em seu rosto e mãos em tempo real.
+Este projeto é uma aplicação ReactJS desenvolvida para estudos e insights em reconhecimento facial e de mãos usando TensorFlow. A aplicação utiliza o [TensorFlow.js][https://www.tensorflow.org/?hl=pt-br] juntamente com modelos específicos para facemesh e handpose. Ao acessar sua webcam, ela mapeia pontos-chave em seu rosto e mãos em tempo real.
 
 ## Como Começar
 
@@ -35,11 +35,10 @@ Abra seu navegador da web e acesse a aplicação em http://localhost:3000.
 
 O projeto depende das seguintes bibliotecas:
 
-tensorflow-models/facemesh<br>
-tensorflow-models/handpose<br>
-tensorflow/tfjs<br>
-react-dom<br>
-react-webcam<br>
+[tensorflow-models/facemesh][https://github.com/tensorflow/tfjs-models/tree/master/face-landmarks-detection]<br>
+[tensorflow-models/handpose][https://github.com/tensorflow/tfjs-models/blob/master/handpose/README.md]<br>
+[tensorflow/tfjs][https://www.npmjs.com/package/@tensorflow/tfjs]<br>
+[react-webcam][https://www.npmjs.com/package/react-webcam]<br>
 
 ## Uso
 
