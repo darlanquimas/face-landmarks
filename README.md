@@ -1,4 +1,4 @@
-### Reconhecimento Facial e de Mãos com TensorFlow no React
+# Reconhecimento Facial e de Mãos com TensorFlow no React
 
 ## Visão Geral
 
