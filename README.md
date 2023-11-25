@@ -8,39 +8,28 @@ Este projeto é uma aplicação ReactJS desenvolvida para estudos e insights em 
 
 Para executar o projeto localmente, siga estas etapas simples:
 
-1. Clone o repositório em sua máquina local:
+Clone o repositório em sua máquina local e avegue até o diretório do projeto:
 
 ```bash
 git clone https://github.com/darlanquimas/face-landmarks.git
-Navegue até o diretório do projeto:
-```
-
-```bash
 cd face-landmarks
-Instale as dependências do projeto usando Yarn ou npm:
 ```
 
+Instale as dependências do projeto e inicie o servidor de desenvolvimento usando Yarn ou npm:
+
 ```bash
- Copy code
  yarn install
+ yarn start
 ```
 
 # ou
 
-````bash
-Inicie o servidor de desenvolvimento:
-
 ```bash
-Copy code
-yarn start
-````
-
-# ou
-
-```bash
+npm install
 npm start
-Abra seu navegador da web e acesse a aplicação em http://localhost:3000.
 ```
+
+Abra seu navegador da web e acesse a aplicação em http://localhost:3000.
 
 ## Dependências
 
