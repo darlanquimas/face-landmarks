@@ -1,70 +1,58 @@
-# Getting Started with Create React App
+Reconhecimento Facial e de Mãos com TensorFlow no React
+Visão Geral
+Este projeto é uma aplicação ReactJS desenvolvida para estudos e insights em reconhecimento facial e de mãos usando TensorFlow. A aplicação utiliza o TensorFlow.js juntamente com modelos específicos para facemesh e handpose. Ao acessar sua webcam, ela mapeia pontos-chave em seu rosto e mãos em tempo real.
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Como Começar
+Para executar o projeto localmente, siga estas etapas simples:
 
-## Available Scripts
+Clone o repositório em sua máquina local:
 
-In the project directory, you can run:
+bash
+Copy code
+git clone https://github.com/darlanquimas/face-landmarks.git
+Navegue até o diretório do projeto:
 
-### `yarn start`
+bash
+Copy code
+cd face-landmarks
+Instale as dependências do projeto usando Yarn ou npm:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+bash
+Copy code
+yarn install
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+# ou
 
-### `yarn test`
+npm install
+Inicie o servidor de desenvolvimento:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+bash
+Copy code
+yarn start
 
-### `yarn build`
+# ou
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+npm start
+Abra seu navegador da web e acesse a aplicação em http://localhost:3000.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Dependências
+O projeto depende das seguintes bibliotecas:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+@tensorflow-models/facemesh: Versão 0.0.5
+@tensorflow-models/handpose: Versão 0.1.0
+@tensorflow/tfjs: Versão 4.13.0
+@testing-library/jest-dom: Versão 5.14.1
+@testing-library/react: Versão 13.0.0
+@testing-library/user-event: Versão 13.2.1
+react: Versão 18.2.0
+react-dom: Versão 18.2.0
+react-scripts: Versão 5.0.1
+react-webcam: Versão 7.2.0
+web-vitals: Versão 2.1.0
+Uso
+Ao executar a aplicação, abra sua webcam e experimente o reconhecimento facial e de mãos em tempo real. O aplicativo é o resultado de experimentação e aprendizado sobre as capacidades do TensorFlow.js para reconhecer características faciais e movimentos das mãos.
 
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Observações
+Este projeto está em andamento, e alguns toques adicionais ainda estão pendentes.
+O objetivo principal é compreender a funcionalidade do TensorFlow no reconhecimento facial e de mãos.
+Sinta-se à vontade para explorar, experimentar e contribuir para o projeto. Feliz codificação! 🚀
