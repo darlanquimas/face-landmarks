@@ -2,7 +2,7 @@
 
 ## Visão Geral
 
-Este projeto é uma aplicação ReactJS desenvolvida para estudos e insights em reconhecimento facial e de mãos usando TensorFlow. A aplicação utiliza o [TensorFlow.js][https://www.tensorflow.org/?hl=pt-br] juntamente com modelos específicos para facemesh e handpose. Ao acessar sua webcam, ela mapeia pontos-chave em seu rosto e mãos em tempo real.
+Este projeto é uma aplicação ReactJS desenvolvida para estudos e insights em reconhecimento facial e de mãos usando TensorFlow. A aplicação utiliza o [TensorFlow.js](https://www.tensorflow.org/?hl=pt-br) juntamente com modelos específicos para facemesh e handpose. Ao acessar sua webcam, ela mapeia pontos-chave em seu rosto e mãos em tempo real.
 
 ## Como Começar
 
