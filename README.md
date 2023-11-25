@@ -35,11 +35,11 @@ Abra seu navegador da web e acesse a aplicação em http://localhost:3000.
 
 O projeto depende das seguintes bibliotecas:
 
-tensorflow-models/facemesh
-tensorflow-models/handpose
-tensorflow/tfjs
-react-dom: Versão 18.2.0
-react-webcam: Versão 7.2.0
+tensorflow-models/facemesh<br>
+tensorflow-models/handpose<br>
+tensorflow/tfjs<br>
+react-dom<br>
+react-webcam<br>
 
 ## Uso
 
