@@ -23,6 +23,15 @@ function App() {
     camera: false,
   });
   const [error, setError] = useState<string | null>(null);
+  const [faceTrackingEnabled, setFaceTrackingEnabled] = useState<boolean>(true);
+  const [handTrackingEnabled, setHandTrackingEnabled] = useState<boolean>(true);
+  const [rightHandPosition, setRightHandPosition] = useState<{ 
+    x: number; 
+    y: number; 
+    z: number;
+    rotationX: number;
+    rotationY: number;
+  } | null>(null);
 
   const detect = useCallback(
     async (
@@ -60,46 +69,101 @@ function App() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       try {
-        const facePredictions = faceDetector
-          ? await faceDetector.estimateFaces(video, {
-              flipHorizontal: false,
-              staticImageMode: false,
-            })
-          : [];
+        const facePredictions =
+          faceTrackingEnabled && faceDetector
+            ? await faceDetector.estimateFaces(video, {
+                flipHorizontal: false,
+                staticImageMode: false,
+              })
+            : [];
 
-        const handPredictions = handDetector
-          ? await handDetector.estimateHands(video, {
-              flipHorizontal: false,
-              staticImageMode: false,
-            })
-          : [];
+        const handPredictions =
+          handTrackingEnabled && handDetector
+            ? await handDetector.estimateHands(video, {
+                flipHorizontal: false,
+                staticImageMode: false,
+              })
+            : [];
+        
+        // Debug: verificar estrutura do handedness
+        if (handPredictions.length > 0) {
+          console.log('Hand predictions:', handPredictions[0]);
+        }
 
         // Inverter coordenadas X para espelhar (vídeo está espelhado, canvas não)
         const flipX = (x: number) => videoWidth - x;
 
-        drawFaceMesh(
-          facePredictions.map((pred: { keypoints: Array<{ x: number; y: number }> }) => ({
-            keypoints: pred.keypoints.map((kp: { x: number; y: number }) => [flipX(kp.x), kp.y] as [number, number]),
-          })),
-          ctx
-        );
+        if (faceTrackingEnabled) {
+          drawFaceMesh(
+            facePredictions.map((pred: { keypoints: Array<{ x: number; y: number }> }) => ({
+              keypoints: pred.keypoints.map((kp: { x: number; y: number }) => [flipX(kp.x), kp.y] as [number, number]),
+            })),
+            ctx
+          );
+        }
 
-        drawHands(
-          handPredictions.map((pred: { keypoints: Array<{ x: number; y: number }> }) => ({
-            keypoints: pred.keypoints.map((kp: { x: number; y: number }) => [flipX(kp.x), kp.y] as [number, number]),
-          })),
-          ctx
-        );
+        if (handTrackingEnabled) {
+          // Encontrar mão direita (do ponto de vista do usuário - imagem espelhada)
+          const rightHand = handPredictions.find((pred: any) => {
+            const handedness = typeof pred.handedness === 'string' 
+              ? pred.handedness 
+              : pred.handedness?.[0]?.label;
+            // Como a imagem está espelhada, Left do modelo = direita do usuário
+            return handedness === 'Left';
+          });
+
+          // Atualizar posição da mão direita para controlar o cubo
+          if (rightHand && rightHand.keypoints && rightHand.keypoints.length > 0) {
+            // Usar o ponto central da mão (pulso - índice 0)
+            const wrist = rightHand.keypoints[0];
+            // Coordenadas originais do modelo (antes de espelhar)
+            const originalX = wrist.x;
+            const originalY = wrist.y;
+            
+            // Normalizar coordenadas para 0-1 baseado no tamanho do vídeo
+            // Usar coordenadas originais para rotação correta
+            const normalizedX = originalX / videoWidth;
+            const normalizedY = originalY / videoHeight;
+            
+            // Para movimento: usar coordenadas espelhadas (flipX)
+            // Para rotação: usar coordenadas originais (sem flip)
+            const flippedX = flipX(originalX) / videoWidth;
+            
+            // Converter para coordenadas do cubo dentro do container (0-100%)
+            // X: espelhado para movimento, mas rotação usa original
+            // Y: invertido para que movimento para cima mova o cubo para cima
+            setRightHandPosition({
+              x: flippedX * 100, // Posição X espelhada para movimento
+              y: (1 - normalizedY) * 100, // Posição Y invertida
+              z: 0,
+              rotationX: normalizedY * 360, // Rotação X baseada em Y original
+              rotationY: normalizedX * 360, // Rotação Y baseada em X original (não espelhado)
+            });
+          } else {
+            setRightHandPosition(null);
+          }
+
+          drawHands(
+            handPredictions.map((pred: any) => ({
+              keypoints: pred.keypoints.map((kp: { x: number; y: number }) => [flipX(kp.x), kp.y] as [number, number]),
+              handedness: pred.handedness,
+            })),
+            ctx
+          );
+        } else {
+          setRightHandPosition(null);
+        }
       } catch (err) {
         console.error('Erro na detecção:', err);
       }
     },
-    []
+    [faceTrackingEnabled, handTrackingEnabled]
   );
 
   useEffect(() => {
     let faceDetector: FaceLandmarksDetector | null = null;
     let handDetector: HandDetector | null = null;
+    let isMounted = true;
     // Capturar referência do webcam no início do effect para usar no cleanup
     const currentWebcam = webcamRef.current;
 
@@ -147,26 +211,85 @@ function App() {
         }
 
         console.log('Criando detectores...');
-        // Carregar detectores sequencialmente para evitar conflitos
-        const faceModel = await faceModule.createDetector(
-          faceModule.SupportedModels.MediaPipeFaceMesh,
-          {
-            runtime: 'mediapipe' as const,
-            solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619',
-            refineLandmarks: true,
-          }
-        );
-        console.log('Detector facial criado');
         
-        const handModel = await handModule.createDetector(
-          handModule.SupportedModels.MediaPipeHands,
-          {
-            runtime: 'mediapipe' as const,
-            solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240',
-            modelType: 'full' as const,
+        // Carregar detectores sequencialmente para evitar conflitos
+        // Usar try-catch individual para cada detector
+        let faceModel: FaceLandmarksDetector | null = null;
+        let handModel: HandDetector | null = null;
+        
+        try {
+          faceModel = await faceModule.createDetector(
+            faceModule.SupportedModels.MediaPipeFaceMesh,
+            {
+              runtime: 'mediapipe' as const,
+              solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619',
+              refineLandmarks: true,
+            }
+          );
+          console.log('Detector facial criado');
+        } catch (faceError: any) {
+          // Ignorar erro "File exists" - os arquivos já foram carregados
+          if (faceError?.message?.includes('File exists') || faceError?.message?.includes('EEXIST')) {
+            console.warn('Arquivos MediaPipe já existem, continuando...');
+            // Tentar criar novamente - desta vez deve funcionar
+            try {
+              faceModel = await faceModule.createDetector(
+                faceModule.SupportedModels.MediaPipeFaceMesh,
+                {
+                  runtime: 'mediapipe' as const,
+                  solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619',
+                  refineLandmarks: true,
+                }
+              );
+              console.log('Detector facial criado (retry)');
+            } catch (retryError) {
+              console.error('Erro ao criar detector facial após retry:', retryError);
+              throw retryError;
+            }
+          } else {
+            console.error('Erro ao criar detector facial:', faceError);
+            throw faceError;
           }
-        );
-        console.log('Detector de mãos criado');
+        }
+        
+        try {
+          handModel = await handModule.createDetector(
+            handModule.SupportedModels.MediaPipeHands,
+            {
+              runtime: 'mediapipe' as const,
+              solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240',
+              modelType: 'full' as const,
+            }
+          );
+          console.log('Detector de mãos criado');
+        } catch (handError: any) {
+          // Ignorar erro "File exists" - os arquivos já foram carregados
+          if (handError?.message?.includes('File exists') || handError?.message?.includes('EEXIST')) {
+            console.warn('Arquivos MediaPipe já existem, continuando...');
+            // Tentar criar novamente - desta vez deve funcionar
+            try {
+              handModel = await handModule.createDetector(
+                handModule.SupportedModels.MediaPipeHands,
+                {
+                  runtime: 'mediapipe' as const,
+                  solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1675469240',
+                  modelType: 'full' as const,
+                }
+              );
+              console.log('Detector de mãos criado (retry)');
+            } catch (retryError) {
+              console.error('Erro ao criar detector de mãos após retry:', retryError);
+              throw retryError;
+            }
+          } else {
+            console.error('Erro ao criar detector de mãos:', handError);
+            throw handError;
+          }
+        }
+        
+        if (!isMounted) {
+          return;
+        }
         console.log('Detectores criados com sucesso');
 
         faceDetector = faceModel;
@@ -247,17 +370,63 @@ function App() {
           </p>
         </div>
       )}
-      <div className="video-container">
-        <Webcam
-          ref={webcamRef}
-          className="webcam"
-          videoConstraints={{
-            width: { ideal: 1280 },
-            height: { ideal: 720 },
-            facingMode: 'user',
-          }}
-        />
-        <canvas ref={canvasRef} className="canvas-overlay" />
+      <div className="controls-panel">
+        <label className="toggle-control">
+          <input
+            type="checkbox"
+            checked={faceTrackingEnabled}
+            onChange={(e) => setFaceTrackingEnabled(e.target.checked)}
+            disabled={isLoading}
+          />
+          <span className="toggle-label">Rastreamento Facial</span>
+          <span className={`toggle-switch ${faceTrackingEnabled ? 'active' : ''}`} />
+        </label>
+        <label className="toggle-control">
+          <input
+            type="checkbox"
+            checked={handTrackingEnabled}
+            onChange={(e) => setHandTrackingEnabled(e.target.checked)}
+            disabled={isLoading}
+          />
+          <span className="toggle-label">Rastreamento de Mãos</span>
+          <span className={`toggle-switch ${handTrackingEnabled ? 'active' : ''}`} />
+        </label>
+      </div>
+      <div className="main-content">
+        <div className="video-container">
+          <Webcam
+            ref={webcamRef}
+            className="webcam"
+            videoConstraints={{
+              width: { ideal: 1280 },
+              height: { ideal: 720 },
+              facingMode: 'user',
+            }}
+          />
+          <canvas ref={canvasRef} className="canvas-overlay" />
+        </div>
+        <div className="cube-container">
+          <div 
+            className="cube-3d"
+            style={{
+              transform: rightHandPosition
+                ? `translate3d(calc(${rightHandPosition.x}% - 50px), calc(${rightHandPosition.y}% - 50px), ${rightHandPosition.z}px) rotateX(${rightHandPosition.rotationX}deg) rotateY(${rightHandPosition.rotationY}deg)`
+                : 'translate3d(calc(50% - 50px), calc(50% - 50px), 0px) rotateX(0deg) rotateY(0deg)',
+            }}
+          >
+            <div className="cube-face cube-front"></div>
+            <div className="cube-face cube-back"></div>
+            <div className="cube-face cube-right"></div>
+            <div className="cube-face cube-left"></div>
+            <div className="cube-face cube-top"></div>
+            <div className="cube-face cube-bottom"></div>
+          </div>
+          {!rightHandPosition && (
+            <div className="cube-placeholder">
+              <p>Mostre sua mão direita para controlar o cubo</p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

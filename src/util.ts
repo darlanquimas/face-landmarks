@@ -217,21 +217,87 @@ export const drawFaceMesh = (
 };
 
 export const drawHands = (
-  predictions: Array<{ keypoints: Point2D[] }>,
+  predictions: Array<{ 
+    keypoints: Point2D[];
+    handedness?: string | Array<{ label: string; score: number }>;
+  }>,
   ctx: CanvasRenderingContext2D
 ): void => {
   if (predictions.length === 0) {
     return;
   }
 
-  predictions.forEach((hand) => {
+  predictions.forEach((hand, index) => {
     const landmarks = hand.keypoints;
+    
+    // Determinar qual mão é (Left ou Right)
+    // IMPORTANTE: Como a imagem está espelhada, precisamos inverter a lógica
+    // O que o modelo detecta como "Left" é na verdade a mão direita do usuário
+    let handLabel = 'Mão';
+    if (typeof hand.handedness === 'string') {
+      handLabel = hand.handedness;
+    } else if (Array.isArray(hand.handedness) && hand.handedness.length > 0) {
+      handLabel = hand.handedness[0].label;
+    }
+    
+    // Inverter porque a imagem está espelhada
+    // Se o modelo detecta "Left", na verdade é a mão direita do usuário
+    const modelDetectedLeft = handLabel === 'Left';
+    const modelDetectedRight = handLabel === 'Right';
+    
+    // Para o usuário (imagem espelhada):
+    const isUserLeftHand = modelDetectedRight; // O que o modelo vê como Right é a esquerda do usuário
+    const isUserRightHand = modelDetectedLeft; // O que o modelo vê como Left é a direita do usuário
+    
+    // Cor diferente para cada mão (do ponto de vista do usuário)
+    const handColor = isUserLeftHand ? '#00ff00' : '#ff6b6b'; // Verde para esquerda, vermelho para direita
+    
+    // Desenhar landmarks
     for (let i = 0; i < landmarks.length; i++) {
       const [x, y] = landmarks[i] as Point2D;
       ctx.beginPath();
       ctx.arc(x, y, 5, 0, 2 * Math.PI);
-      ctx.fillStyle = 'red';
+      ctx.fillStyle = handColor;
       ctx.fill();
+    }
+    
+    // Desenhar label da mão (usar o ponto do pulso - índice 0)
+    if (landmarks.length > 0) {
+      const [wristX, wristY] = landmarks[0] as Point2D;
+      const labelText = isUserLeftHand ? 'Mão Esquerda' : isUserRightHand ? 'Mão Direita' : 'Mão';
+      
+      // Fundo do texto
+      ctx.font = 'bold 18px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'bottom';
+      
+      const textMetrics = ctx.measureText(labelText);
+      const textWidth = textMetrics.width;
+      const textHeight = 20;
+      const padding = 8;
+      
+      // Retângulo de fundo
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.fillRect(
+        wristX - textWidth / 2 - padding,
+        wristY - textHeight - padding - 5,
+        textWidth + padding * 2,
+        textHeight + padding * 2
+      );
+      
+      // Texto
+      ctx.fillStyle = handColor;
+      ctx.fillText(labelText, wristX, wristY - 5);
+      
+      // Borda do retângulo
+      ctx.strokeStyle = handColor;
+      ctx.lineWidth = 2;
+      ctx.strokeRect(
+        wristX - textWidth / 2 - padding,
+        wristY - textHeight - padding - 5,
+        textWidth + padding * 2,
+        textHeight + padding * 2
+      );
     }
   });
 };

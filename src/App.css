@@ -9,9 +9,17 @@
   box-sizing: border-box;
 }
 
+.main-content {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  max-width: 1600px;
+  align-items: flex-start;
+}
+
 .video-container {
   position: relative;
-  width: 100%;
+  flex: 1;
   max-width: 1280px;
   aspect-ratio: 16 / 9;
   border-radius: 12px;
@@ -90,6 +98,82 @@
   font-weight: 500;
 }
 
+.controls-panel {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 16px 24px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+}
+
+.toggle-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.toggle-control input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-label {
+  color: white;
+  font-weight: 500;
+  font-size: 16px;
+  min-width: 180px;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 56px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+}
+
+.toggle-switch::before {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: white;
+  top: 4px;
+  left: 4px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-switch.active {
+  background: #667eea;
+}
+
+.toggle-switch.active::before {
+  transform: translateX(24px);
+}
+
+.toggle-control input[type="checkbox"]:disabled + .toggle-label + .toggle-switch {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.toggle-control input[type="checkbox"]:focus + .toggle-label + .toggle-switch {
+  outline: 2px solid rgba(255, 255, 255, 0.5);
+  outline-offset: 2px;
+}
+
 @media (max-width: 768px) {
   .app-container {
     padding: 10px;
@@ -108,4 +192,109 @@
     padding: 12px 20px;
     font-size: 14px;
   }
+
+  .controls-panel {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px 16px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .toggle-label {
+    min-width: auto;
+    font-size: 14px;
+  }
+
+  .main-content {
+    flex-direction: column;
+  }
+}
+
+.cube-container {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.cube-3d {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  transform-style: preserve-3d;
+  transition: transform 0.15s ease-out;
+}
+
+@keyframes rotateCube {
+  from {
+    transform: rotateX(0deg) rotateY(0deg);
+  }
+  to {
+    transform: rotateX(360deg) rotateY(360deg);
+  }
+}
+
+.cube-face {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.cube-front {
+  background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+  transform: rotateY(0deg) translateZ(50px);
+}
+
+.cube-back {
+  background: linear-gradient(135deg, #4ecdc4, #44a08d);
+  transform: rotateY(180deg) translateZ(50px);
+}
+
+.cube-right {
+  background: linear-gradient(135deg, #feca57, #ff9ff3);
+  transform: rotateY(90deg) translateZ(50px);
+}
+
+.cube-left {
+  background: linear-gradient(135deg, #48dbfb, #0abde3);
+  transform: rotateY(-90deg) translateZ(50px);
+}
+
+.cube-top {
+  background: linear-gradient(135deg, #ff9ff3, #feca57);
+  transform: rotateX(90deg) translateZ(50px);
+}
+
+.cube-bottom {
+  background: linear-gradient(135deg, #ee5a6f, #ff6b6b);
+  transform: rotateX(-90deg) translateZ(50px);
+}
+
+.cube-placeholder {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  padding: 20px;
+  pointer-events: none;
 }
