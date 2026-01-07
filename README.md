@@ -1,45 +1,112 @@
-# Reconhecimento Facial e de Mãos com TensorFlow no React
+# Reconhecimento Facial e de Mãos com TensorFlow no React + TypeScript
 
 ## Visão Geral
 
-Este projeto é uma aplicação ReactJS desenvolvida para estudos e insights em reconhecimento facial e de mãos usando TensorFlow. A aplicação utiliza o [TensorFlow.js](https://www.tensorflow.org/?hl=pt-br) juntamente com modelos específicos para facemesh e handpose. Ao acessar sua webcam, ela mapeia pontos-chave em seu rosto e mãos em tempo real.
+Este projeto é uma aplicação React com TypeScript desenvolvida para estudos e insights em reconhecimento facial e de mãos usando TensorFlow.js. A aplicação utiliza modelos modernos do TensorFlow.js para detectar e mapear pontos-chave faciais e das mãos em tempo real através da webcam.
+
+## Tecnologias
+
+- **React 19** - Biblioteca JavaScript para construção de interfaces
+- **TypeScript 5.3** - Superset do JavaScript com tipagem estática
+- **TensorFlow.js 4.15** - Machine Learning no navegador
+- **@tensorflow-models/face-landmarks-detection** - Detecção de landmarks faciais
+- **@tensorflow-models/hand-pose-detection** - Detecção de pose das mãos
+- **MediaPipe** - Framework de ML para detecção em tempo real
+
+## Funcionalidades
+
+- ✅ Detecção de landmarks faciais em tempo real (468 pontos)
+- ✅ Detecção de pose das mãos (21 pontos por mão)
+- ✅ Visualização de malha triangular facial
+- ✅ Interface responsiva e moderna
+- ✅ Indicadores de carregamento
+- ✅ Tratamento de erros robusto
+- ✅ Performance otimizada com requestAnimationFrame
 
 ## Como Começar
 
-Para executar o projeto localmente, siga estas etapas simples:
+### Pré-requisitos
 
-Clone o repositório em sua máquina local e avegue até o diretório do projeto:
+- Node.js 18+ e npm ou yarn
+- Navegador moderno com suporte a WebGL
+- Webcam
+
+### Instalação
+
+Clone o repositório e navegue até o diretório do projeto:
 
 ```bash
 git clone https://github.com/darlanquimas/face-landmarks.git
 cd face-landmarks
 ```
 
-Instale as dependências do projeto e inicie o servidor de desenvolvimento usando Yarn ou npm:
+Instale as dependências:
 
 ```bash
- yarn install
- yarn start
+npm install --legacy-peer-deps
 ```
 
-# ou
+ou
 
 ```bash
-npm install
+yarn install
+```
+
+> **Nota:** O projeto usa `--legacy-peer-deps` devido a conflitos de dependências entre os modelos TensorFlow. Um arquivo `.npmrc` foi configurado para aplicar isso automaticamente.
+
+### Executar
+
+Inicie o servidor de desenvolvimento:
+
+```bash
 npm start
 ```
 
-Abra seu navegador da web e acesse a aplicação em http://localhost:3000.
+ou
 
-## Dependências
+```bash
+yarn start
+```
 
-O projeto depende das seguintes bibliotecas:
+Abra seu navegador e acesse [http://localhost:3000](http://localhost:3000).
 
-[tensorflow-models/facemesh](https://github.com/tensorflow/tfjs-models/tree/master/face-landmarks-detection)<br>
-[tensorflow-models/handpose](https://github.com/tensorflow/tfjs-models/blob/master/handpose/README.md)<br>
-[tensorflow/tfjs](https://www.npmjs.com/package/@tensorflow/tfjs)<br>
-[react-webcam](https://www.npmjs.com/package/react-webcam)<br>
+## Dependências Principais
+
+- [@tensorflow-models/face-landmarks-detection](https://github.com/tensorflow/tfjs-models/tree/master/face-landmarks-detection) - Modelo moderno para detecção facial
+- [@tensorflow-models/hand-pose-detection](https://github.com/tensorflow/tfjs-models/tree/master/hand-pose-detection) - Modelo para detecção de mãos
+- [@tensorflow/tfjs](https://www.npmjs.com/package/@tensorflow/tfjs) - TensorFlow.js core
+- [react-webcam](https://www.npmjs.com/package/react-webcam) - Componente React para acesso à webcam
 
 ## Uso
 
-Ao executar a aplicação, abra sua webcam e experimente o reconhecimento facial e de mãos em tempo real. O aplicativo é o resultado de experimentação e aprendizado sobre as capacidades do TensorFlow.js para reconhecer características faciais e movimentos das mãos.
+1. Ao abrir a aplicação, permita o acesso à sua webcam quando solicitado
+2. Aguarde o carregamento dos modelos de ML (indicado na tela)
+3. Posicione-se em frente à câmera
+4. A aplicação detectará automaticamente seu rosto e mãos, desenhando os landmarks em tempo real
+
+## Estrutura do Projeto
+
+```
+src/
+├── App.tsx          # Componente principal com lógica de detecção
+├── App.css          # Estilos do componente principal
+├── util.ts          # Funções utilitárias para desenho dos landmarks
+├── index.tsx        # Ponto de entrada da aplicação
+└── index.css        # Estilos globais
+```
+
+## Melhorias Implementadas
+
+- ✅ Migração para TypeScript com tipagem forte
+- ✅ Atualização para React 19
+- ✅ Migração de `facemesh` (deprecado) para `face-landmarks-detection`
+- ✅ Migração de `handpose` para `hand-pose-detection`
+- ✅ Layout responsivo e moderno
+- ✅ Performance otimizada com `requestAnimationFrame`
+- ✅ Indicadores visuais de carregamento
+- ✅ Tratamento robusto de erros
+- ✅ Limpeza adequada de recursos (cleanup)
+
+## Desenvolvimento
+
+Este projeto foi desenvolvido para fins educacionais e de experimentação com TensorFlow.js e detecção de landmarks em tempo real no navegador.
